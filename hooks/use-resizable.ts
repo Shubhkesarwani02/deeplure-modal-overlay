@@ -85,6 +85,15 @@ export function useResizable({
     [constrainSize, onSizeChange]
   )
 
+  // Clamp initial size on mount to viewport
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      updateSize(size)
+    })
+    return () => cancelAnimationFrame(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, direction: string) => {
       e.preventDefault()

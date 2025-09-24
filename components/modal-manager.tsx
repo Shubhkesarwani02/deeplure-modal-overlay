@@ -38,6 +38,24 @@ export function ModalManagerProvider({ children }: ModalManagerProviderProps) {
   const [modals, setModals] = useState<Map<string, ModalConfig>>(new Map())
   const [zIndexCounter, setZIndexCounter] = useState(1000) // Added z-index counter for stacking
 
+  const computeSafeInitial = (cfg: ModalConfig) => {
+    if (typeof window === 'undefined') {
+      return cfg.initialPosition ?? { x: 100, y: 100 }
+    }
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const margin = 8
+    const w = Math.min(Math.max(cfg.width ?? 400, cfg.minWidth ?? 300), (cfg.maxWidth ?? (vw - margin * 2)))
+    const h = Math.min(Math.max(cfg.height ?? 300, cfg.minHeight ?? 200), (cfg.maxHeight ?? (vh - margin * 2)))
+    const baseX = cfg.initialPosition?.x ?? 100
+    const baseY = cfg.initialPosition?.y ?? 100
+    const jitterX = Math.round(Math.random() * 80 - 40)
+    const jitterY = Math.round(Math.random() * 80 - 40)
+    const x = Math.max(margin, Math.min(baseX + jitterX, vw - w - margin))
+    const y = Math.max(margin, Math.min(baseY + jitterY, vh - h - margin))
+    return { x, y }
+  }
+
   const openModal = useCallback((config: ModalConfig) => {
     // Check if modal of this type already exists
     const existingModalId = Array.from(modals.keys()).find(id => 
@@ -55,11 +73,8 @@ export function ModalManagerProvider({ children }: ModalManagerProviderProps) {
         ...config,
         id: instanceId,
         title: config.title,
-        // Offset position slightly for new instances
-        initialPosition: {
-          x: (config.initialPosition?.x || 100) + (Math.random() * 100 - 50),
-          y: (config.initialPosition?.y || 100) + (Math.random() * 100 - 50),
-        },
+        // Safe, jittered within viewport
+        initialPosition: computeSafeInitial(config),
       }
       setModals((prev) => new Map(prev).set(instanceId, instanceConfig))
       setZIndexCounter((prev) => prev + 1)
@@ -74,11 +89,8 @@ export function ModalManagerProvider({ children }: ModalManagerProviderProps) {
         ...config,
         id: instanceId,
         title: `${config.title} ${Array.from(modals.keys()).filter((id) => id.startsWith(config.id)).length + 1}`,
-        // Offset position slightly for new instances
-        initialPosition: {
-          x: (config.initialPosition?.x || 100) + (Math.random() * 100 - 50),
-          y: (config.initialPosition?.y || 100) + (Math.random() * 100 - 50),
-        },
+        // Safe, jittered within viewport
+        initialPosition: computeSafeInitial(config),
       }
       setModals((prev) => new Map(prev).set(instanceId, instanceConfig))
       setZIndexCounter((prev) => prev + 1)

@@ -45,7 +45,23 @@ export function useMovableModal({
   const [position, setPosition] = useState<Position>(initialPosition)
   const [isDragging, setIsDragging] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
-  const [zIndex, setZIndex] = useState(1000)
+  // Global z-index counter to ensure proper stacking across multiple instances
+  // Module-scoped so all hook instances share the same counter
+  // Start at a safe base to sit above most app content
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const zIndexBaseRef = useRef<number>(0)
+  const [zIndex, setZIndex] = useState<number>(() => {
+    // Initialize on first render to the next highest z-index
+    if (typeof window !== 'undefined') {
+      // @ts-expect-error attach to window for cross-module safety if code reloads
+      if (!window.__MOVABLE_MODAL_Z__) window.__MOVABLE_MODAL_Z__ = 1000
+      // @ts-expect-error read/write shared counter
+      window.__MOVABLE_MODAL_Z__ += 1
+      // @ts-expect-error use current counter value
+      return window.__MOVABLE_MODAL_Z__ as number
+    }
+    return 1001
+  })
   const [snapTarget, setSnapTarget] = useState<SnapTarget | null>(null)
 
   const modalRef = useRef<HTMLDivElement>(null)
@@ -118,6 +134,16 @@ export function useMovableModal({
     [constrainPosition, onPositionChange],
   )
 
+  // On mount, clamp the initial position to ensure the modal is in the viewport
+  useEffect(() => {
+    // Defer to next frame to ensure modalRef has layout/rect
+    const id = requestAnimationFrame(() => {
+      updatePosition(position)
+    })
+    return () => cancelAnimationFrame(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!modalRef.current) return
 
@@ -129,7 +155,16 @@ export function useMovableModal({
     }
 
     setIsDragging(true)
-    setZIndex((prev) => prev + 1)
+    // Bring to front using global counter
+    if (typeof window !== 'undefined') {
+      // @ts-expect-error shared counter
+      window.__MOVABLE_MODAL_Z__ += 1
+      // @ts-expect-error read value
+      const nextZ = window.__MOVABLE_MODAL_Z__ as number
+      setZIndex(nextZ)
+    } else {
+      setZIndex((prev) => prev + 1)
+    }
 
     // Prevent text selection during drag
     e.preventDefault()
@@ -170,7 +205,15 @@ export function useMovableModal({
     }
 
     setIsDragging(true)
-    setZIndex((prev) => prev + 1)
+    if (typeof window !== 'undefined') {
+      // @ts-expect-error shared counter
+      window.__MOVABLE_MODAL_Z__ += 1
+      // @ts-expect-error read value
+      const nextZ = window.__MOVABLE_MODAL_Z__ as number
+      setZIndex(nextZ)
+    } else {
+      setZIndex((prev) => prev + 1)
+    }
   }, [])
 
   const handleTouchMove = useCallback(
@@ -238,7 +281,15 @@ export function useMovableModal({
   }, [onClose])
 
   const bringToFront = useCallback(() => {
-    setZIndex((prev) => prev + 1)
+    if (typeof window !== 'undefined') {
+      // @ts-expect-error shared counter
+      window.__MOVABLE_MODAL_Z__ += 1
+      // @ts-expect-error read value
+      const nextZ = window.__MOVABLE_MODAL_Z__ as number
+      setZIndex(nextZ)
+    } else {
+      setZIndex((prev) => prev + 1)
+    }
   }, [])
 
   return {

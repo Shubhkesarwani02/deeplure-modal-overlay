@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { forwardRef, useEffect, useState } from "react"
+import { forwardRef, useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
 import { X, Minus, Square, GripHorizontal, Maximize2, Minimize2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -76,6 +76,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
       restore,
       close,
       bringToFront,
+      updatePosition,
     } = useMovableModal({
       id,
       initialPosition,
@@ -90,6 +91,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
       isResizing,
       handleMouseDown: handleResizeMouseDown,
       handleTouchStart: handleResizeTouchStart,
+      updateSize,
     } = useResizable({
       initialSize: { width, height },
       minWidth,
@@ -101,6 +103,22 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
     })
 
     const focusTrapRef = useFocusTrap(isOpen && !isMinimized)
+
+    // Memoized computed dimensions/position for render
+    const measured = useMemo(() => {
+      const vw = typeof window !== 'undefined' ? window.innerWidth : size.width
+      const vh = typeof window !== 'undefined' ? window.innerHeight : size.height
+      const margin = 8 // keep tiny margin for usability
+      const maxW = Math.max(minWidth, Math.min(maxWidth ?? vw - margin * 2, vw - margin * 2))
+      const maxH = Math.max(minHeight, Math.min(maxHeight ?? vh - margin * 2, vh - margin * 2))
+      const rawW = isMaximized ? vw : size.width
+      const rawH = isMaximized ? vh : size.height
+      const w = Math.min(Math.max(rawW, minWidth), maxW)
+      const h = Math.min(Math.max(rawH, minHeight), maxH)
+      const x = isMaximized ? 0 : Math.max(0, Math.min(position.x, vw - w))
+      const y = isMaximized ? 0 : Math.max(0, Math.min(position.y, vh - h))
+      return { w, h, x, y }
+    }, [isMaximized, size.width, size.height, position.x, position.y, minWidth, minHeight, maxWidth, maxHeight])
 
     // Maximize/restore functionality
     const maximize = () => {
@@ -116,7 +134,9 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
       } else {
         // Restore from maximized state
         if (preMaximizeState) {
-          // This would need to be implemented in the hooks
+          // Restore size and position via hooks' public updaters
+          try { updateSize(preMaximizeState.size) } catch {}
+          try { updatePosition(preMaximizeState.position) } catch {}
           setIsMaximized(false)
           setPreMaximizeState(null)
         }
@@ -126,7 +146,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
     // Handle escape key
     useEffect(() => {
       const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && isOpen && !isMinimized) {
+        if (e.key === 'Escape' && isOpen) {
           close()
         }
       }
@@ -135,7 +155,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
         document.addEventListener('keydown', handleEscape)
         return () => document.removeEventListener('keydown', handleEscape)
       }
-    }, [close, isOpen, isMinimized])
+    }, [close, isOpen])
 
     // Combine refs
     useEffect(() => {
@@ -148,12 +168,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
       }
     }, [ref])
 
-    if (!isOpen) return null
-
-    const currentWidth = isMaximized ? window?.innerWidth || size.width : size.width
-    const currentHeight = isMaximized ? window?.innerHeight || size.height : size.height
-    const currentX = isMaximized ? 0 : position.x
-    const currentY = isMaximized ? 0 : position.y
+  if (!isOpen) return null
 
     const modalContent = (
       <>
@@ -161,7 +176,11 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
         <div
           className="fixed inset-0 bg-black/20 backdrop-blur-[1px]"
           style={{ zIndex: zIndex - 1 }}
-          onClick={bringToFront}
+          onClick={(e) => {
+            // backdrop click closes
+            e.stopPropagation()
+            onClose()
+          }}
         />
 
         {/* Snap Indicators */}
@@ -210,26 +229,28 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
             className,
           )}
           style={{
-            left: currentX,
-            top: currentY,
-            width: isMinimized ? "auto" : currentWidth,
-            height: isMinimized ? "auto" : currentHeight,
+            left: measured.x,
+            top: measured.y,
+            width: isMinimized ? "auto" : measured.w,
+            height: isMinimized ? "auto" : measured.h,
             minWidth: isMinimized ? "auto" : minWidth,
             minHeight: isMinimized ? "auto" : minHeight,
             maxWidth: isMaximized ? "none" : (isMinimized ? "none" : maxWidth),
             maxHeight: isMaximized ? "none" : (isMinimized ? "none" : maxHeight),
             zIndex,
           }}
-          onClick={bringToFront}
+          onClick={(e) => { e.stopPropagation(); bringToFront() }}
           role="dialog"
           aria-modal="true"
           aria-labelledby={`modal-title-${id}`}
+          aria-describedby={`modal-desc-${id}`}
         >
           {/* Header */}
           <div
             className={cn(
               "flex items-center justify-between px-3 py-2 border-b border-[#4a4a4a]",
-              "bg-[#383838] cursor-move select-none text-white",
+              "bg-[#383838] select-none text-white",
+              !isMaximized && "cursor-grab active:cursor-grabbing",
               "hover:bg-[#404040] transition-colors",
               isMaximized && "cursor-default"
             )}
@@ -282,7 +303,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
 
           {/* Content */}
           {!isMinimized && (
-            <div className="flex-1 overflow-auto modal-scrollbar p-4 bg-[#2b2b2b] text-white">
+            <div id={`modal-desc-${id}`} className="flex-1 overflow-auto modal-scrollbar p-4 bg-[#2b2b2b] text-white">
               {children}
             </div>
           )}
