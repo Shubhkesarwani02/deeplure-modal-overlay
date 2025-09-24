@@ -1,12 +1,13 @@
 "use client"
 
 import type React from "react"
-import { forwardRef, useEffect } from "react"
+import { forwardRef, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { X, Minus, Square, GripHorizontal } from "lucide-react"
+import { X, Minus, Square, GripHorizontal, Maximize2, Minimize2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useMovableModal, type Position } from "@/hooks/use-movable-modal"
+import { useResizable, RESIZE_HANDLES } from "@/hooks/use-resizable"
 import { useFocusTrap } from "@/hooks/use-focus-trap"
 
 export interface MovableModalProps {
@@ -28,6 +29,7 @@ export interface MovableModalProps {
   showMinimize?: boolean
   showMaximize?: boolean
   onPositionChange?: (position: Position) => void
+  onSizeChange?: (size: { width: number; height: number }) => void
 }
 
 export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
@@ -46,20 +48,28 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
       minHeight = 200,
       maxWidth,
       maxHeight,
-      resizable = false,
+      resizable = true,
       constrainToViewport = true,
       showMinimize = true,
-      showMaximize = false,
+      showMaximize = true,
       onPositionChange,
+      onSizeChange,
     },
     ref,
   ) => {
+    const [isMaximized, setIsMaximized] = useState(false)
+    const [preMaximizeState, setPreMaximizeState] = useState<{
+      position: Position
+      size: { width: number; height: number }
+    } | null>(null)
+
     const {
       modalRef,
       position,
       isDragging,
       isMinimized,
       zIndex,
+      snapTarget,
       handleMouseDown,
       handleTouchStart,
       minimize,
@@ -74,23 +84,58 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
       onClose,
     })
 
+    const {
+      elementRef: resizeRef,
+      size,
+      isResizing,
+      handleMouseDown: handleResizeMouseDown,
+      handleTouchStart: handleResizeTouchStart,
+    } = useResizable({
+      initialSize: { width, height },
+      minWidth,
+      minHeight,
+      maxWidth,
+      maxHeight,
+      constrainToViewport,
+      onSizeChange,
+    })
+
     const focusTrapRef = useFocusTrap(isOpen && !isMinimized)
+
+    // Maximize/restore functionality
+    const maximize = () => {
+      if (typeof window === 'undefined') return
+      
+      if (!isMaximized) {
+        // Store current state before maximizing
+        setPreMaximizeState({
+          position,
+          size,
+        })
+        setIsMaximized(true)
+      } else {
+        // Restore from maximized state
+        if (preMaximizeState) {
+          // This would need to be implemented in the hooks
+          setIsMaximized(false)
+          setPreMaximizeState(null)
+        }
+      }
+    }
 
     // Handle escape key
     useEffect(() => {
-      const handleEscape = (e: Event) => {
-        if (e instanceof CustomEvent && e.type === "modal-escape") {
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && isOpen && !isMinimized) {
           close()
         }
       }
 
-      if (modalRef.current) {
-        modalRef.current.addEventListener("modal-escape", handleEscape)
-        return () => {
-          modalRef.current?.removeEventListener("modal-escape", handleEscape)
-        }
+      if (isOpen) {
+        document.addEventListener('keydown', handleEscape)
+        return () => document.removeEventListener('keydown', handleEscape)
       }
-    }, [close])
+    }, [close, isOpen, isMinimized])
 
     // Combine refs
     useEffect(() => {
@@ -105,37 +150,74 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
 
     if (!isOpen) return null
 
+    const currentWidth = isMaximized ? window?.innerWidth || size.width : size.width
+    const currentHeight = isMaximized ? window?.innerHeight || size.height : size.height
+    const currentX = isMaximized ? 0 : position.x
+    const currentY = isMaximized ? 0 : position.y
+
     const modalContent = (
       <>
         {/* Backdrop */}
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/20 backdrop-blur-[1px]"
           style={{ zIndex: zIndex - 1 }}
           onClick={bringToFront}
         />
 
+        {/* Snap Indicators */}
+        {snapTarget && isDragging && (
+          <div
+            className="fixed pointer-events-none border-2 border-dashed border-blue-400 bg-blue-400/20 transition-all duration-150"
+            style={{
+              zIndex: zIndex + 10,
+              left: snapTarget.x,
+              top: snapTarget.y,
+              width: size.width,
+              height: size.height,
+            }}
+          >
+            <div className="absolute inset-0 bg-blue-400/10 animate-pulse" />
+            <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium shadow-lg">
+              📌 {snapTarget.type === 'edge' ? 'Snap to Edge' : snapTarget.type === 'panel' ? 'Dock with Panel' : 'Snap to Grid'}
+            </div>
+          </div>
+        )}
+
         {/* Modal */}
         <div
           ref={(node) => {
-            modalRef.current = node
-            focusTrapRef.current = node
+            if (node) {
+              // Set up all ref references to the same node
+              if (modalRef.current !== node) {
+                Object.assign(modalRef, { current: node })
+              }
+              if (resizeRef.current !== node) {
+                Object.assign(resizeRef, { current: node })
+              }
+              if (focusTrapRef.current !== node) {
+                Object.assign(focusTrapRef, { current: node })
+              }
+            }
           }}
           className={cn(
-            "fixed bg-card border border-border rounded-lg shadow-2xl",
+            "fixed bg-[#2b2b2b] border border-[#4a4a4a] rounded-lg shadow-2xl",
             "flex flex-col overflow-hidden",
-            isDragging ? "modal-dragging" : "modal-not-dragging",
+            "modal-panel",
+            isDragging && "modal-dragging",
+            isResizing && "modal-resizing",
             isMinimized && "h-auto",
+            isMaximized && "!fixed !inset-0 !rounded-none",
             className,
           )}
           style={{
-            left: position.x,
-            top: position.y,
-            width: isMinimized ? "auto" : width,
-            height: isMinimized ? "auto" : height,
+            left: currentX,
+            top: currentY,
+            width: isMinimized ? "auto" : currentWidth,
+            height: isMinimized ? "auto" : currentHeight,
             minWidth: isMinimized ? "auto" : minWidth,
             minHeight: isMinimized ? "auto" : minHeight,
-            maxWidth: isMinimized ? "none" : maxWidth,
-            maxHeight: isMinimized ? "none" : maxHeight,
+            maxWidth: isMaximized ? "none" : (isMinimized ? "none" : maxWidth),
+            maxHeight: isMaximized ? "none" : (isMinimized ? "none" : maxHeight),
             zIndex,
           }}
           onClick={bringToFront}
@@ -146,16 +228,17 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
           {/* Header */}
           <div
             className={cn(
-              "flex items-center justify-between p-3 border-b border-border",
-              "bg-muted/50 cursor-move select-none",
-              "hover:bg-muted/70 transition-colors",
+              "flex items-center justify-between px-3 py-2 border-b border-[#4a4a4a]",
+              "bg-[#383838] cursor-move select-none text-white",
+              "hover:bg-[#404040] transition-colors",
+              isMaximized && "cursor-default"
             )}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
+            onMouseDown={!isMaximized ? handleMouseDown : undefined}
+            onTouchStart={!isMaximized ? handleTouchStart : undefined}
           >
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <GripHorizontal className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <h2 id={`modal-title-${id}`} className="text-sm font-medium truncate">
+              <GripHorizontal className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <h2 id={`modal-title-${id}`} className="text-sm font-medium truncate text-white">
                 {title}
               </h2>
             </div>
@@ -165,11 +248,11 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 hover:bg-muted"
+                  className="h-6 w-6 p-0 hover:bg-[#4a4a4a] text-gray-300 hover:text-white"
                   onClick={isMinimized ? restore : minimize}
                   aria-label={isMinimized ? "Restore" : "Minimize"}
                 >
-                  {isMinimized ? <Square className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+                  {isMinimized ? <Maximize2 className="w-3 h-3" /> : <Minimize2 className="w-3 h-3" />}
                 </Button>
               )}
 
@@ -177,11 +260,9 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 hover:bg-muted"
-                  onClick={() => {
-                    /* TODO: Implement maximize */
-                  }}
-                  aria-label="Maximize"
+                  className="h-6 w-6 p-0 hover:bg-[#4a4a4a] text-gray-300 hover:text-white"
+                  onClick={maximize}
+                  aria-label={isMaximized ? "Restore" : "Maximize"}
                 >
                   <Square className="w-3 h-3" />
                 </Button>
@@ -190,7 +271,7 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                className="h-6 w-6 p-0 hover:bg-red-600 text-gray-300 hover:text-white"
                 onClick={close}
                 aria-label="Close"
               >
@@ -200,7 +281,29 @@ export const MovableModal = forwardRef<HTMLDivElement, MovableModalProps>(
           </div>
 
           {/* Content */}
-          {!isMinimized && <div className="flex-1 overflow-auto modal-scrollbar p-4">{children}</div>}
+          {!isMinimized && (
+            <div className="flex-1 overflow-auto modal-scrollbar p-4 bg-[#2b2b2b] text-white">
+              {children}
+            </div>
+          )}
+
+          {/* Resize handles */}
+          {resizable && !isMinimized && !isMaximized && (
+            <>
+              {RESIZE_HANDLES.map((handle) => (
+                <div
+                  key={handle.direction}
+                  className={cn(
+                    "absolute resize-handle",
+                    `resize-handle-${handle.direction}`
+                  )}
+                  style={{ cursor: handle.cursor }}
+                  onMouseDown={(e) => handleResizeMouseDown(e, handle.direction)}
+                  onTouchStart={(e) => handleResizeTouchStart(e, handle.direction)}
+                />
+              ))}
+            </>
+          )}
         </div>
       </>
     )

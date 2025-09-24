@@ -40,12 +40,12 @@
 }
 
 .dark {
-  --background: oklch(0.095 0.014 247.858);
-  --foreground: oklch(0.98 0.002 247.858);
-  --card: oklch(0.129 0.018 247.858);
-  --card-foreground: oklch(0.98 0.002 247.858);
-  --popover: oklch(0.095 0.014 247.858);
-  --popover-foreground: oklch(0.98 0.002 247.858);
+  --background: #1a1a1a;
+  --foreground: #ffffff;
+  --card: #2b2b2b;
+  --card-foreground: #ffffff;
+  --popover: #2b2b2b;
+  --popover-foreground: #ffffff;
   --primary: oklch(0.571 0.191 275.75);
   --primary-foreground: oklch(0.98 0.002 247.858);
   --secondary: oklch(0.163 0.021 247.858);
@@ -152,8 +152,235 @@
   transition: transform 0.2s ease-out;
 }
 
+.modal-resizing {
+  transition: none !important;
+  user-select: none;
+}
+
 /* Focus trap styling */
 .focus-trap-active {
   outline: 2px solid hsl(var(--color-ring));
   outline-offset: 2px;
+}
+
+/* Photoshop-like panel styling */
+.modal-panel {
+  background: #2b2b2b !important;
+  border: 1px solid #4a4a4a !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Resize handles */
+.resize-handle {
+  position: absolute;
+  z-index: 10;
+}
+
+.resize-handle:hover {
+  background: rgba(74, 74, 74, 0.3);
+}
+
+.resize-handle-n {
+  top: -3px;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  cursor: n-resize;
+}
+
+.resize-handle-ne {
+  top: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: ne-resize;
+}
+
+.resize-handle-e {
+  top: 8px;
+  right: -3px;
+  bottom: 8px;
+  width: 6px;
+  cursor: e-resize;
+}
+
+.resize-handle-se {
+  bottom: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+}
+
+.resize-handle-s {
+  bottom: -3px;
+  left: 8px;
+  right: 8px;
+  height: 6px;
+  cursor: s-resize;
+}
+
+.resize-handle-sw {
+  bottom: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: sw-resize;
+}
+
+.resize-handle-w {
+  top: 8px;
+  left: -3px;
+  bottom: 8px;
+  width: 6px;
+  cursor: w-resize;
+}
+
+.resize-handle-nw {
+  top: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: nw-resize;
+}
+
+/* Enhanced modal animations */
+.modal-panel {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-dragging {
+  transition: none !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  transform: scale(1.02);
+}
+
+.modal-resizing {
+  transition: none !important;
+}
+
+/* Custom scrollbar for modal content */
+.modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a #2b2b2b;
+}
+
+.modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: #2b2b2b;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 4px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+.modal-scrollbar::-webkit-scrollbar-corner {
+  background: #2b2b2b;
+}
+
+/* Panel status indicators */
+.panel-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse 2s infinite;
+}
+
+.panel-indicator.minimized {
+  background: #f59e0b;
+}
+
+.panel-indicator.inactive {
+  background: #6b7280;
+  animation: none;
+}
+
+/* Enhanced button styles for panels */
+.panel-button {
+  background: #383838;
+  border: 1px solid #4a4a4a;
+  color: #e5e7eb;
+  transition: all 0.15s ease;
+}
+
+.panel-button:hover {
+  background: #404040;
+  border-color: #5a5a5a;
+  color: #f9fafb;
+}
+
+.panel-button:active {
+  background: #2a2a2a;
+  transform: scale(0.98);
+}
+
+/* Snap zone animations */
+@keyframes snapPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+.snap-zone {
+  animation: snapPulse 1.5s ease-in-out infinite;
+}
+
+/* Professional dropdown styles */
+.panel-select {
+  background: #383838 !important;
+  border: 1px solid #4a4a4a !important;
+  color: #e5e7eb !important;
+}
+
+.panel-select:hover {
+  background: #404040 !important;
+  border-color: #5a5a5a !important;
+}
+
+/* Enhanced slider styles */
+.panel-slider [data-orientation="horizontal"] {
+  background: #4a4a4a;
+}
+
+.panel-slider [data-orientation="horizontal"] [data-slider-thumb] {
+  background: #3b82f6;
+  border: 2px solid #1d4ed8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.panel-slider [data-orientation="horizontal"] [data-slider-thumb]:hover {
+  background: #2563eb;
+  border-color: #1e40af;
+  transform: scale(1.1);
+}
+
+/* Photoshop-like status bar */
+.status-bar {
+  background: linear-gradient(180deg, #383838 0%, #2b2b2b 100%);
+  border-top: 1px solid #4a4a4a;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Tool palette enhancements */
+.tool-active {
+  background: #3b82f6 !important;
+  box-shadow: inset 0 0 0 2px #1d4ed8;
+}
+
+.tool-button:hover {
+  background: #404040;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }

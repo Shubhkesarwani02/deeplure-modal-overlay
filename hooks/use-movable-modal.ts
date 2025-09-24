@@ -9,6 +9,12 @@ export interface Position {
   y: number
 }
 
+export interface SnapTarget {
+  x: number
+  y: number
+  type: 'edge' | 'panel' | 'grid'
+}
+
 export interface ModalInstance {
   id: string
   title: string
@@ -21,6 +27,8 @@ export interface UseMovableModalProps {
   id: string
   initialPosition?: Position
   constrainToViewport?: boolean
+  enableSnapping?: boolean
+  snapThreshold?: number
   onPositionChange?: (position: Position) => void
   onClose?: () => void
 }
@@ -29,6 +37,8 @@ export function useMovableModal({
   id,
   initialPosition = { x: 100, y: 100 },
   constrainToViewport = true,
+  enableSnapping = true,
+  snapThreshold = 20,
   onPositionChange,
   onClose,
 }: UseMovableModalProps) {
@@ -36,26 +46,67 @@ export function useMovableModal({
   const [isDragging, setIsDragging] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [zIndex, setZIndex] = useState(1000)
+  const [snapTarget, setSnapTarget] = useState<SnapTarget | null>(null)
 
   const modalRef = useRef<HTMLDivElement>(null)
   const dragStartRef = useRef<{ x: number; y: number } | null>(null)
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null)
 
+  const findSnapTargets = useCallback(
+    (pos: Position): SnapTarget | null => {
+      if (!enableSnapping || typeof window === 'undefined') return null
+
+      const targets: SnapTarget[] = []
+      
+      // Screen edge snapping
+      if (pos.x < snapThreshold) {
+        targets.push({ x: 0, y: pos.y, type: 'edge' })
+      }
+      if (pos.y < snapThreshold) {
+        targets.push({ x: pos.x, y: 0, type: 'edge' })
+      }
+      if (window.innerWidth - pos.x < snapThreshold + 300) { // Assume modal width ~300
+        targets.push({ x: window.innerWidth - 300, y: pos.y, type: 'edge' })
+      }
+      if (window.innerHeight - pos.y < snapThreshold + 200) { // Assume modal height ~200
+        targets.push({ x: pos.x, y: window.innerHeight - 200, type: 'edge' })
+      }
+
+      // Return closest target
+      return targets.length > 0 ? targets[0] : null
+    },
+    [enableSnapping, snapThreshold]
+  )
+
   const constrainPosition = useCallback(
     (pos: Position): Position => {
-      if (!constrainToViewport || !modalRef.current || typeof window === 'undefined') return pos
+      if (!constrainToViewport || !modalRef.current || typeof window === 'undefined') {
+        // Check for snapping even without viewport constraints
+        const snapTarget = findSnapTargets(pos)
+        return snapTarget ? { x: snapTarget.x, y: snapTarget.y } : pos
+      }
 
       const modal = modalRef.current
       const rect = modal.getBoundingClientRect()
       const viewportWidth = window.innerWidth
       const viewportHeight = window.innerHeight
 
-      const constrainedX = Math.max(0, Math.min(pos.x, viewportWidth - rect.width))
-      const constrainedY = Math.max(0, Math.min(pos.y, viewportHeight - rect.height))
+      let constrainedX = Math.max(0, Math.min(pos.x, viewportWidth - rect.width))
+      let constrainedY = Math.max(0, Math.min(pos.y, viewportHeight - rect.height))
+
+      // Apply snapping
+      const snapTarget = findSnapTargets({ x: constrainedX, y: constrainedY })
+      if (snapTarget) {
+        constrainedX = snapTarget.x
+        constrainedY = snapTarget.y
+        setSnapTarget(snapTarget)
+      } else {
+        setSnapTarget(null)
+      }
 
       return { x: constrainedX, y: constrainedY }
     },
-    [constrainToViewport],
+    [constrainToViewport, findSnapTargets]
   )
 
   const updatePosition = useCallback(
@@ -100,6 +151,7 @@ export function useMovableModal({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false)
+    setSnapTarget(null) // Clear snap indicator
     dragStartRef.current = null
     dragOffsetRef.current = null
   }, [])
@@ -139,6 +191,7 @@ export function useMovableModal({
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false)
+    setSnapTarget(null) // Clear snap indicator
     dragStartRef.current = null
     dragOffsetRef.current = null
   }, [])
@@ -194,6 +247,7 @@ export function useMovableModal({
     isDragging,
     isMinimized,
     zIndex,
+    snapTarget,
     handleMouseDown,
     handleTouchStart,
     minimize,

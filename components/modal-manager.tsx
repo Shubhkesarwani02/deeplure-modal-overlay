@@ -39,8 +39,32 @@ export function ModalManagerProvider({ children }: ModalManagerProviderProps) {
   const [zIndexCounter, setZIndexCounter] = useState(1000) // Added z-index counter for stacking
 
   const openModal = useCallback((config: ModalConfig) => {
-    setModals((prev) => new Map(prev).set(config.id, config))
-  }, [])
+    // Check if modal of this type already exists
+    const existingModalId = Array.from(modals.keys()).find(id => 
+      id.startsWith(config.id) || id === config.id
+    )
+    
+    if (existingModalId) {
+      // If it exists, bring it to front
+      setZIndexCounter((prev) => prev + 1)
+    } else {
+      // If it doesn't exist, create new instance
+      const timestamp = Date.now()
+      const instanceId = config.id.includes('-') ? config.id : `${config.id}-${timestamp}`
+      const instanceConfig = {
+        ...config,
+        id: instanceId,
+        title: config.title,
+        // Offset position slightly for new instances
+        initialPosition: {
+          x: (config.initialPosition?.x || 100) + (Math.random() * 100 - 50),
+          y: (config.initialPosition?.y || 100) + (Math.random() * 100 - 50),
+        },
+      }
+      setModals((prev) => new Map(prev).set(instanceId, instanceConfig))
+      setZIndexCounter((prev) => prev + 1)
+    }
+  }, [modals])
 
   const openNewInstance = useCallback(
     (config: ModalConfig) => {
@@ -125,13 +149,12 @@ export function ModalManagerProvider({ children }: ModalManagerProviderProps) {
   return (
     <ModalManagerContext.Provider value={contextValue}>
       {children}
-      {Array.from(modals.entries()).map(([id, config], index) => (
+      {Array.from(modals.entries()).map(([id, config]) => (
         <MovableModal
           key={id}
           {...config}
           isOpen={true}
           onClose={() => closeModal(id)}
-          style={{ zIndex: zIndexCounter + index }} // Dynamic z-index for stacking
         >
           {config.content}
         </MovableModal>

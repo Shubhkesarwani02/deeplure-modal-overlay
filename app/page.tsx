@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ModalManagerProvider, useModalManager } from "@/components/modal-manager"
 import { ToolPalette } from "@/components/tool-palette"
 import { CanvasArea } from "@/components/canvas-area"
@@ -14,6 +14,7 @@ import { ParagraphPanel } from "@/components/panels/paragraph-panel"
 import { SwatchesPanel } from "@/components/panels/swatches-panel"
 import { NavigatorPanel } from "@/components/panels/navigator-panel"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
   Palette,
   Layers,
@@ -39,6 +40,19 @@ function ImageEditor() {
   const { openModal, openNewInstance, closeAllModals, closeAllOfType, getOpenModals, getModalsByType } =
     useModalManager()
   const [selectedTool, setSelectedTool] = useState("select")
+  const [currentTime, setCurrentTime] = useState("")
+
+  // Update time only on client side to avoid hydration mismatch
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleTimeString())
+    }
+    
+    updateTime() // Set initial time
+    const interval = setInterval(updateTime, 1000)
+    
+    return () => clearInterval(interval)
+  }, [])
 
   // Use a safe default for SSR, will be updated on client
   const getInitialX = (offset: number) => {
@@ -144,55 +158,60 @@ function ImageEditor() {
   const openModals = getOpenModals()
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <div className="h-12 bg-card border-b border-border flex items-center justify-between px-4">
+    <div className="h-screen bg-[#1a1a1a] flex flex-col overflow-hidden">
+      <div className="h-12 bg-[#2b2b2b] border-b border-[#4a4a4a] flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5" />
-            <span className="font-semibold">Movable Modal System</span>
+            <FileText className="w-5 h-5 text-white" />
+            <span className="font-semibold text-white">Photoshop-like Panel System</span>
           </div>
 
           <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" className="h-8 px-2">
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-gray-300 hover:text-white hover:bg-[#4a4a4a]">
               <FolderOpen className="w-4 h-4 mr-1" />
               Open
             </Button>
-            <Button size="sm" variant="ghost" className="h-8 px-2">
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-gray-300 hover:text-white hover:bg-[#4a4a4a]">
               <Save className="w-4 h-4 mr-1" />
               Save
             </Button>
           </div>
 
-          <div className="h-6 w-px bg-border" />
+          <div className="h-6 w-px bg-[#4a4a4a]" />
 
           <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" className="h-8 px-2">
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-gray-300 hover:text-white hover:bg-[#4a4a4a]">
               <Undo className="w-4 h-4" />
             </Button>
-            <Button size="sm" variant="ghost" className="h-8 px-2">
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-gray-300 hover:text-white hover:bg-[#4a4a4a]">
               <Redo className="w-4 h-4" />
             </Button>
           </div>
 
-          <div className="h-6 w-px bg-border" />
+          <div className="h-6 w-px bg-[#4a4a4a]" />
 
           <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" className="h-8 px-2">
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-gray-300 hover:text-white hover:bg-[#4a4a4a]">
               <ZoomOut className="w-4 h-4" />
             </Button>
-            <span className="text-sm text-muted-foreground px-2">100%</span>
-            <Button size="sm" variant="ghost" className="h-8 px-2">
+            <span className="text-sm text-gray-300 px-2">100%</span>
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-gray-300 hover:text-white hover:bg-[#4a4a4a]">
               <ZoomIn className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-gray-300">
             {openModals.length} panel{openModals.length !== 1 ? "s" : ""} open
           </span>
           {openModals.length > 0 && (
-            <Button size="sm" variant="outline" onClick={closeAllModals}>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={closeAllModals}
+              className="border-[#4a4a4a] bg-[#383838] text-gray-300 hover:bg-[#4a4a4a] hover:text-white"
+            >
               Close All Panels
             </Button>
           )}
@@ -204,8 +223,8 @@ function ImageEditor() {
 
         <CanvasArea selectedTool={selectedTool} />
 
-        <div className="absolute top-4 right-4 bg-card border border-border rounded-lg p-3 shadow-lg max-w-sm">
-          <div className="text-xs text-muted-foreground mb-3 px-1">Workspace Panels</div>
+        <div className="absolute top-4 right-4 bg-[#2b2b2b] border border-[#4a4a4a] rounded-lg p-3 shadow-lg max-w-sm">
+          <div className="text-xs text-gray-400 mb-3 px-1">Workspace Panels</div>
           <div className="grid grid-cols-3 gap-2">
             {panelConfigs.map((config) => {
               const Icon = config.icon
@@ -218,7 +237,12 @@ function ImageEditor() {
                     <Button
                       variant={hasInstances ? "default" : "ghost"}
                       size="sm"
-                      className="h-8 w-8 p-0 flex-shrink-0"
+                      className={cn(
+                        "h-8 w-8 p-0 flex-shrink-0",
+                        hasInstances
+                          ? "bg-blue-600 hover:bg-blue-700 text-white"
+                          : "text-gray-300 hover:text-white hover:bg-[#4a4a4a]"
+                      )}
                       onClick={() => openModal(config)}
                       title={`Open ${config.title}`}
                     >
@@ -227,7 +251,7 @@ function ImageEditor() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-6 w-6 p-0 flex-shrink-0"
+                      className="h-6 w-6 p-0 flex-shrink-0 text-gray-400 hover:text-white hover:bg-[#4a4a4a]"
                       onClick={() => openNewInstance(config)}
                       title={`New ${config.title} instance`}
                     >
@@ -237,7 +261,7 @@ function ImageEditor() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 w-6 p-0 flex-shrink-0"
+                        className="h-6 w-6 p-0 flex-shrink-0 text-gray-400 hover:text-red-400 hover:bg-[#4a4a4a]"
                         onClick={() => closeAllOfType(config.panelType)}
                         title={`Close all ${config.title} panels`}
                       >
@@ -245,10 +269,10 @@ function ImageEditor() {
                       </Button>
                     )}
                   </div>
-                  <div className="text-xs text-center text-muted-foreground truncate">
+                  <div className="text-xs text-center text-gray-400 truncate">
                     {config.title}
                     {instanceCount > 0 && (
-                      <span className="ml-1 bg-primary/20 text-primary px-1 rounded text-xs">{instanceCount}</span>
+                      <span className="ml-1 bg-blue-600/20 text-blue-400 px-1 rounded text-xs">{instanceCount}</span>
                     )}
                   </div>
                 </div>
@@ -258,14 +282,16 @@ function ImageEditor() {
         </div>
       </div>
 
-      <div className="h-6 bg-muted/50 border-t border-border flex items-center justify-between px-4 text-xs text-muted-foreground">
+      <div className="h-6 bg-[#383838] border-t border-[#4a4a4a] flex items-center justify-between px-4 text-xs text-gray-300">
         <div className="flex items-center gap-4">
           <span>Tool: {selectedTool}</span>
           <span>Canvas: 800x600px</span>
           <span>RGB/8</span>
+          <span>Zoom: 100%</span>
         </div>
         <div className="flex items-center gap-4">
           <span>Ready</span>
+          {currentTime && <span>{currentTime}</span>}
         </div>
       </div>
     </div>
