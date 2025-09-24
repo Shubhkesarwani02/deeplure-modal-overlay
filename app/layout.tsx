@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Movable Modal System",
+  title: "Deeplure Modal Overlay",
   description: "Professional draggable modal overlays with focus management and responsive design",
     generator: 'v0.app'
 }

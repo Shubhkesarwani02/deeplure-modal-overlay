@@ -1,481 +1,492 @@
-# Movable Modal System
+# Deeplure Modal Overlay
 
-<div align="center">
+[![Next.js](https://img.shields.io/badge/Next.js-14.2.16-black?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.9-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-8.0+-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.2.16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.9-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+> A sophisticated, production-ready modal overlay system with advanced movable, resizable, and dockable capabilities built on Next.js 14 and React 18.
 
-*A sophisticated, production-ready modal system with advanced drag-and-drop functionality, built for modern web applications*
+## 🚀 Features
 
-[Demo](#demo) • [Features](#features) • [Installation](#installation) • [Documentation](#documentation) • [Contributing](#contributing)
+### Core Functionality
+- **🎯 Movable Modals**: Drag-and-drop functionality with viewport constraints
+- **📏 Resizable Components**: Dynamic resizing with customizable constraints
+- **🔧 Tool Palette**: Comprehensive design tool interface
+- **🎨 Advanced Panel System**: Multiple specialized panels (Colors, Layers, Brushes, History)
+- **📱 Responsive Design**: Mobile-first approach with adaptive layouts
+- **🌙 Theme Support**: Dark/light mode with system preference detection
 
-</div>
-
----
-
-## 🚀 Overview
-
-The **Movable Modal System** is a comprehensive, enterprise-grade modal management solution that brings desktop-like window management to web applications. Built with React, TypeScript, and modern web standards, it provides a powerful foundation for creating complex UI layouts with floating panels, tool palettes, and dynamic workspaces.
-
-Perfect for creative applications, dashboards, IDEs, design tools, and any application requiring sophisticated modal management.
-
-## ✨ Features
-
-### 🪟 Advanced Modal Management
-- **Multi-Instance Support** - Open multiple instances of the same modal type
-- **Intelligent Z-Index Management** - Automatic stacking and focus management
-- **Global Modal Control** - Close all modals or filter by type
-- **Context-Aware Management** - Built-in modal manager with React Context API
-
-### 🎯 Drag & Drop Excellence
-- **Smooth Dragging** - Native mouse and touch support with hardware acceleration
-- **Viewport Constraints** - Keep modals within screen boundaries
-- **Smart Snapping** - Snap to edges, grids, and other panels
-- **Multi-Touch Support** - Full touch device compatibility
-
-### 📏 Flexible Resizing
-- **8-Point Resizing** - Resize from all corners and edges
-- **Aspect Ratio Constraints** - Maintain proportions when needed
-- **Min/Max Dimensions** - Configurable size limits
-- **Responsive Behavior** - Adapts to different screen sizes
-
-### 🎨 Rich UI Components
-- **9 Specialized Panels** - Pre-built panels for common use cases:
-  - Color Panel - Advanced color picker and palette management
-  - Layers Panel - Layer management with visibility controls
-  - Brushes Panel - Tool selection and brush customization
-  - History Panel - Undo/redo functionality
-  - Properties Panel - Dynamic property editing
-  - Character Panel - Typography and text formatting
-  - Paragraph Panel - Text alignment and spacing
-  - Swatches Panel - Color swatch management
-  - Navigator Panel - Viewport navigation and minimap
-
-### 🛠️ Developer Experience
-- **TypeScript First** - Full type safety and IntelliSense support
-- **Hook-Based Architecture** - Composable and reusable logic
-- **Customizable Theming** - Built on Tailwind CSS with CSS variables
-- **Accessibility Ready** - WCAG 2.1 compliant with focus management
-- **SSR Compatible** - Works with Next.js and other SSR frameworks
-
-### 🎛️ Window Controls
-- **Minimize/Maximize** - Standard window controls
-- **Custom Title Bars** - Fully customizable headers
-- **Focus Trapping** - Proper keyboard navigation
-- **Modal Stacking** - Intelligent layering system
+### Technical Highlights
+- **⚡ High Performance**: Optimized React components with efficient state management
+- **🛡️ Type Safety**: Full TypeScript implementation with strict type checking
+- **🎨 Modern UI**: Radix UI components with Tailwind CSS styling
+- **🔄 State Management**: Context-based state management with custom hooks
+- **📦 Component Library**: Comprehensive reusable component system
+- **🐳 Docker Ready**: Multi-stage production builds with nginx optimization
 
 ## 📋 Prerequisites
 
-Before installing, ensure you have:
+Ensure you have the following installed on your development machine:
 
-- **Node.js** 18.0 or higher
-- **npm**, **yarn**, or **pnpm** package manager
-- **React** 18.0 or higher
-- **TypeScript** 5.0 or higher (recommended)
+- **Node.js**: >= 18.17.0 (recommended: 18.x LTS)
+- **pnpm**: >= 8.0.0 (package manager)
+- **Git**: Latest stable version
+- **Docker** (optional): >= 20.10.0 for containerized deployment
 
 ## 🛠️ Installation
 
-### Option 1: Clone the Repository
+### Local Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Shubhkesarwani02/deeplure-modal-overlay.git
+   cd deeplure-modal-overlay
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Start development server**
+   ```bash
+   pnpm dev
+   ```
+
+4. **Access the application**
+   ```
+   http://localhost:3000
+   ```
+
+### Docker Development Setup
+
+1. **Start development environment**
+   ```bash
+   docker-compose up dev
+   ```
+
+2. **Access the containerized application**
+   ```
+   http://localhost:3000
+   ```
+
+## 🏗️ Build & Deployment
+
+### Production Build
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/movable-modal-system.git
+# Build the application
+pnpm build
 
-# Navigate to the project directory
-cd movable-modal-system
-
-# Install dependencies
-pnpm install
-
-# Start the development server
-pnpm dev
+# Start production server
+pnpm start
 ```
 
-### Option 2: Use as a Template
+### Docker Production Deployment
 
 ```bash
-# Create a new project using this template
-npx create-next-app@latest my-modal-app --typescript --tailwind --eslint
+# Build and run production container
+docker-compose up production
 
-# Navigate to your project
-cd my-modal-app
-
-# Copy the modal system files
-# (Copy components/, hooks/, lib/, and styles/ directories)
-
-# Install additional dependencies
-pnpm add @radix-ui/react-dialog @radix-ui/react-tabs lucide-react class-variance-authority clsx
+# Or build manually
+docker build -f Dockerfile -t deeplure-modal-overlay:latest .
+docker run -p 80:80 deeplure-modal-overlay:latest
 ```
 
-### Option 3: Manual Installation
+### Performance Optimizations
 
-Add to your existing project:
+The production build includes:
+- **Static optimization**: Pre-rendered pages and assets
+- **Code splitting**: Dynamic imports and route-based splitting
+- **Image optimization**: Next.js automatic image optimization
+- **Bundle analysis**: Webpack bundle analyzer integration
+- **Nginx optimization**: Gzip compression, caching headers, security headers
 
-```bash
-# Install core dependencies
-pnpm add react react-dom next
+## 📁 Project Architecture
 
-# Install UI dependencies
-pnpm add @radix-ui/react-accordion @radix-ui/react-alert-dialog @radix-ui/react-dialog
-pnpm add @radix-ui/react-tabs @radix-ui/react-tooltip @radix-ui/react-popover
-pnpm add lucide-react class-variance-authority clsx tailwind-merge
-
-# Install development dependencies
-pnpm add -D @types/react @types/react-dom @types/node typescript tailwindcss autoprefixer postcss
+```
+deeplure-modal-overlay/
+├── app/                     # Next.js App Router
+│   ├── favicon.ico
+│   ├── globals.css         # Global styles
+│   ├── layout.tsx          # Root layout component
+│   └── page.tsx            # Home page
+├── components/             # React components
+│   ├── canvas-area.tsx     # Main canvas component
+│   ├── modal-manager.tsx   # Modal state management
+│   ├── movable-modal.tsx   # Core modal component
+│   ├── tool-palette.tsx    # Tool interface
+│   ├── panels/             # Specialized UI panels
+│   │   ├── brushes-panel.tsx
+│   │   ├── color-panel.tsx
+│   │   ├── layers-panel.tsx
+│   │   └── ...
+│   └── ui/                 # Reusable UI components
+│       ├── button.tsx
+│       ├── dialog.tsx
+│       └── ...
+├── hooks/                  # Custom React hooks
+│   ├── use-movable-modal.ts
+│   ├── use-resizable.ts
+│   └── use-focus-trap.ts
+├── lib/                    # Utility functions
+│   └── utils.ts
+├── styles/                 # Styling files
+│   └── globals.css
+├── public/                 # Static assets
+├── docker/                 # Docker configuration
+│   ├── Dockerfile
+│   ├── Dockerfile.dev
+│   ├── docker-compose.yml
+│   └── nginx.conf
+└── config files            # Configuration
+    ├── next.config.mjs
+    ├── tailwind.config.js
+    ├── tsconfig.json
+    └── package.json
 ```
 
-## 🚀 Quick Start
+## 🔧 Configuration
 
-### 1. Basic Setup
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Application Configuration
+NEXT_PUBLIC_APP_NAME=Deeplure Modal Overlay
+NEXT_PUBLIC_APP_VERSION=0.1.0
+
+# Analytics (optional)
+NEXT_PUBLIC_VERCEL_ANALYTICS_ID=your_analytics_id
+
+# Development
+NODE_ENV=development
+```
+
+### TypeScript Configuration
+
+The project uses strict TypeScript settings for maximum type safety:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "ES6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{"name": "next"}],
+    "paths": {"@/*": ["./*"]}
+  }
+}
+```
+
+## 🎨 Component Usage
+
+### Basic Modal Implementation
 
 ```tsx
-import { ModalManagerProvider } from '@/components/modal-manager'
 import { MovableModal } from '@/components/movable-modal'
 
-function App() {
-  return (
-    <ModalManagerProvider>
-      <YourAppContent />
-    </ModalManagerProvider>
-  )
-}
-```
-
-### 2. Open a Modal
-
-```tsx
-import { useModalManager } from '@/components/modal-manager'
-import { ColorPanel } from '@/components/panels/color-panel'
-
 function MyComponent() {
-  const { openModal } = useModalManager()
-
-  const handleOpenColorPanel = () => {
-    openModal({
-      id: 'color-panel',
-      title: 'Color Picker',
-      content: <ColorPanel />,
-      width: 300,
-      height: 400,
-      resizable: true,
-    })
-  }
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <button onClick={handleOpenColorPanel}>
-      Open Color Panel
-    </button>
-  )
-}
-```
-
-### 3. Custom Modal
-
-```tsx
-function CustomModal() {
-  const { openModal } = useModalManager()
-
-  const openCustomModal = () => {
-    openModal({
-      id: 'my-custom-modal',
-      title: 'My Custom Panel',
-      content: (
-        <div className="p-4">
-          <h2>Custom Content</h2>
-          <p>Your custom modal content here</p>
-        </div>
-      ),
-      width: 500,
-      height: 300,
-      minWidth: 300,
-      minHeight: 200,
-      showMinimize: true,
-      showMaximize: true,
-      resizable: true,
-    })
-  }
-
-  return <button onClick={openCustomModal}>Open Custom Modal</button>
-}
-```
-
-## 📖 API Reference
-
-### Modal Manager
-
-#### `useModalManager()`
-
-Hook for managing modals globally.
-
-```tsx
-const {
-  openModal,
-  openNewInstance,
-  closeModal,
-  closeAllModals,
-  closeAllOfType,
-  isModalOpen,
-  getOpenModals,
-  getModalsByType,
-  bringToFront
-} = useModalManager()
-```
-
-**Methods:**
-- `openModal(config)` - Open a modal (reuses existing if same ID)
-- `openNewInstance(config)` - Always creates a new modal instance
-- `closeModal(id)` - Close a specific modal
-- `closeAllModals()` - Close all open modals
-- `closeAllOfType(type)` - Close all modals of a specific type
-- `isModalOpen(id)` - Check if a modal is open
-- `getOpenModals()` - Get array of all open modal IDs
-- `getModalsByType(type)` - Get modals filtered by type
-- `bringToFront(id)` - Bring a modal to the front
-
-### MovableModal Props
-
-```tsx
-interface MovableModalProps {
-  id: string                                    // Unique identifier
-  title: string                                 // Modal title
-  children: React.ReactNode                     // Modal content
-  isOpen: boolean                               // Open/closed state
-  onClose: () => void                           // Close callback
-  initialPosition?: Position                    // Starting position
-  className?: string                            // Custom CSS classes
-  width?: number                                // Initial width
-  height?: number                               // Initial height
-  minWidth?: number                             // Minimum width
-  minHeight?: number                            // Minimum height
-  maxWidth?: number                             // Maximum width
-  maxHeight?: number                            // Maximum height
-  resizable?: boolean                           // Enable resizing
-  constrainToViewport?: boolean                 // Keep within viewport
-  showMinimize?: boolean                        // Show minimize button
-  showMaximize?: boolean                        // Show maximize button
-  onPositionChange?: (position: Position) => void  // Position change callback
-  onSizeChange?: (size: {width: number, height: number}) => void  // Size change callback
-}
-```
-
-### Hooks
-
-#### `useMovableModal()`
-
-Core hook for modal positioning and dragging.
-
-```tsx
-const {
-  modalRef,
-  position,
-  isDragging,
-  isMinimized,
-  zIndex,
-  snapTarget,
-  handleMouseDown,
-  handleTouchStart,
-  minimize,
-  restore,
-  close,
-  bringToFront
-} = useMovableModal(options)
-```
-
-#### `useResizable()`
-
-Hook for modal resizing functionality.
-
-```tsx
-const {
-  elementRef,
-  size,
-  isResizing,
-  handleMouseDown,
-  handleTouchStart
-} = useResizable(options)
-```
-
-#### `useFocusTrap()`
-
-Hook for managing focus within modals.
-
-```tsx
-const { trapRef } = useFocusTrap(isActive)
-```
-
-## 🎨 Customization
-
-### Styling
-
-The system uses Tailwind CSS with CSS variables for theming:
-
-```css
-:root {
-  --modal-bg: hsl(0 0% 100%);
-  --modal-border: hsl(214.3 31.8% 91.4%);
-  --modal-shadow: hsl(222.2 84% 4.9% / 0.1);
-}
-
-.dark {
-  --modal-bg: hsl(222.2 84% 4.9%);
-  --modal-border: hsl(217.2 32.6% 17.5%);
-  --modal-shadow: hsl(222.2 84% 4.9% / 0.8);
-}
-```
-
-### Custom Panels
-
-Create custom panels by extending the base structure:
-
-```tsx
-export function CustomPanel() {
-  return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Custom Panel</h3>
+    <MovableModal
+      id="example-modal"
+      title="Example Modal"
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      initialPosition={{ x: 100, y: 100 }}
+      width={400}
+      height={300}
+      resizable
+      constrainToViewport
+    >
+      <div className="p-4">
+        <p>Modal content goes here</p>
       </div>
-      {/* Your custom content */}
-    </div>
+    </MovableModal>
   )
 }
 ```
 
-### Themes
-
-Toggle between light and dark themes:
+### Advanced Modal with Custom Hooks
 
 ```tsx
-import { useTheme } from 'next-themes'
+import { useMovableModal } from '@/hooks/use-movable-modal'
+import { useModalManager } from '@/components/modal-manager'
 
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  
+function AdvancedModalExample() {
+  const { openModal, closeModal } = useModalManager()
+  const { position, updatePosition } = useMovableModal()
+
+  const handleOpenModal = () => {
+    openModal({
+      id: 'advanced-modal',
+      title: 'Advanced Features',
+      component: <YourCustomComponent />,
+      options: {
+        resizable: true,
+        showMinimize: true,
+        showMaximize: true,
+        minWidth: 300,
+        minHeight: 200,
+      }
+    })
+  }
+
   return (
-    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-      Toggle Theme
+    <button onClick={handleOpenModal}>
+      Open Advanced Modal
     </button>
   )
 }
 ```
-
-## 🏗️ Architecture
-
-The system is built with a modular architecture:
-
-```
-├── components/
-│   ├── modal-manager.tsx      # Global modal state management
-│   ├── movable-modal.tsx      # Core modal component
-│   ├── tool-palette.tsx       # Tool selection interface
-│   ├── canvas-area.tsx        # Main workspace area
-│   └── panels/                # Specialized panel components
-├── hooks/
-│   ├── use-movable-modal.ts   # Modal positioning logic
-│   ├── use-resizable.ts       # Resizing functionality
-│   └── use-focus-trap.ts      # Accessibility focus management
-└── lib/
-    └── utils.ts               # Utility functions
-```
-
-## 📱 Browser Support
-
-- **Chrome** 88+
-- **Firefox** 85+
-- **Safari** 14+
-- **Edge** 88+
-- **Mobile Safari** 14+
-- **Chrome Mobile** 88+
-
-## ⚡ Performance
-
-- **Optimized Rendering** - Uses React.memo and useMemo for expensive operations
-- **Hardware Acceleration** - CSS transforms for smooth animations
-- **Event Delegation** - Efficient event handling
-- **Memory Management** - Proper cleanup of event listeners and timeouts
 
 ## 🧪 Testing
 
+### Running Tests
+
 ```bash
-# Run tests
+# Run all tests
 pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
 
 # Run tests with coverage
 pnpm test:coverage
 
-# Run E2E tests
+# Run end-to-end tests
 pnpm test:e2e
 ```
 
-## 📦 Build
+### Test Structure
+
+```
+__tests__/
+├── components/
+│   ├── movable-modal.test.tsx
+│   └── modal-manager.test.tsx
+├── hooks/
+│   ├── use-movable-modal.test.ts
+│   └── use-resizable.test.ts
+└── utils/
+    └── utils.test.ts
+```
+
+## 📊 Performance Monitoring
+
+### Built-in Analytics
+
+The application includes Vercel Analytics for performance monitoring:
+
+```tsx
+import { Analytics } from '@vercel/analytics/react'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+```
+
+### Performance Metrics
+
+- **First Contentful Paint (FCP)**: < 1.5s
+- **Largest Contentful Paint (LCP)**: < 2.5s
+- **Cumulative Layout Shift (CLS)**: < 0.1
+- **First Input Delay (FID)**: < 100ms
+
+## 🚀 Deployment
+
+### Vercel Deployment
+
+1. Connect your GitHub repository to Vercel
+2. Configure environment variables
+3. Deploy automatically on push to main branch
+
+### Docker Production
 
 ```bash
-# Development build
-pnpm dev
+# Build production image
+docker build -f Dockerfile -t deeplure-modal-overlay:prod .
 
-# Production build
+# Run with docker-compose
+docker-compose -f docker-compose.yml up production
+```
+
+### Manual Server Deployment
+
+```bash
+# Build the application
 pnpm build
 
 # Start production server
 pnpm start
 
-# Lint code
-pnpm lint
-
-# Type check
-pnpm type-check
+# Or use PM2 for process management
+pm2 start ecosystem.config.js
 ```
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! Please follow these guidelines:
 
-### Development Setup
+### Development Workflow
 
-1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/movable-modal-system.git`
-3. Install dependencies: `pnpm install`
-4. Create a feature branch: `git checkout -b feature/amazing-feature`
-5. Make your changes and add tests
-6. Run tests: `pnpm test`
-7. Commit your changes: `git commit -m 'Add amazing feature'`
-8. Push to the branch: `git push origin feature/amazing-feature`
-9. Open a Pull Request
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-### Code Style
+### Code Standards
 
-- Use TypeScript for all new code
-- Follow the existing code style (ESLint + Prettier)
-- Add JSDoc comments for public APIs
-- Include tests for new features
+- **ESLint**: Follow the established linting rules
+- **Prettier**: Use consistent code formatting
+- **TypeScript**: Maintain strict type checking
+- **Testing**: Include tests for new features
+- **Documentation**: Update docs for API changes
+
+### Commit Message Convention
+
+```
+type(scope): description
+
+feat(modal): add drag constraints
+fix(resize): resolve boundary calculation
+docs(readme): update installation guide
+test(hooks): add resizable hook tests
+```
+
+## 📝 API Documentation
+
+### MovableModal Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `id` | `string` | required | Unique modal identifier |
+| `title` | `string` | required | Modal title text |
+| `isOpen` | `boolean` | required | Modal visibility state |
+| `onClose` | `() => void` | required | Close handler function |
+| `initialPosition` | `Position` | `{x: 50, y: 50}` | Initial modal position |
+| `width` | `number` | `400` | Modal width in pixels |
+| `height` | `number` | `300` | Modal height in pixels |
+| `resizable` | `boolean` | `false` | Enable resize functionality |
+| `constrainToViewport` | `boolean` | `true` | Limit movement to viewport |
+
+### Custom Hooks
+
+#### useMovableModal
+
+```tsx
+const {
+  position,
+  updatePosition,
+  isDragging,
+  dragHandlers
+} = useMovableModal({
+  initialPosition: { x: 100, y: 100 },
+  constrainToViewport: true
+})
+```
+
+#### useResizable
+
+```tsx
+const {
+  size,
+  updateSize,
+  isResizing,
+  resizeHandlers
+} = useResizable({
+  initialSize: { width: 400, height: 300 },
+  minWidth: 200,
+  minHeight: 150
+})
+```
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**Issue**: Modal not appearing
+```bash
+# Check z-index conflicts in CSS
+# Verify portal mounting
+# Check isOpen state management
+```
+
+**Issue**: Drag functionality not working
+```bash
+# Ensure pointer events are enabled
+# Check event handler attachments
+# Verify touch device compatibility
+```
+
+**Issue**: Performance issues with multiple modals
+```bash
+# Implement modal virtualization
+# Use React.memo for optimization
+# Check for memory leaks
+```
+
+### Browser Compatibility
+
+- **Chrome**: >= 90
+- **Firefox**: >= 88
+- **Safari**: >= 14
+- **Edge**: >= 90
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 👥 Team
+
+- **Lead Developer**: [Shubh Kesarwani](https://github.com/Shubhkesarwani02)
+- **Project**: Deeplure Modal Overlay System
+
 ## 🙏 Acknowledgments
 
-- **Radix UI** - For the excellent headless UI primitives
-- **Tailwind CSS** - For the utility-first CSS framework
-- **Lucide React** - For the beautiful icons
-- **Next.js** - For the powerful React framework
-- **Vercel** - For hosting and deployment
+- [Next.js](https://nextjs.org/) - The React framework for production
+- [Radix UI](https://www.radix-ui.com/) - Low-level UI primitives
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Lucide React](https://lucide.dev/) - Beautiful & consistent icons
+- [Vercel](https://vercel.com/) - Deployment and hosting platform
 
 ## 📞 Support
 
-- 📧 **Email**: support@your-domain.com
-- 💬 **Discord**: [Join our community](https://discord.gg/your-invite)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-username/movable-modal-system/issues)
-- 📖 **Documentation**: [Full Documentation](https://your-docs-site.com)
+- **Documentation**: [Wiki](https://github.com/Shubhkesarwani02/deeplure-modal-overlay/wiki)
+- **Issues**: [GitHub Issues](https://github.com/Shubhkesarwani02/deeplure-modal-overlay/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Shubhkesarwani02/deeplure-modal-overlay/discussions)
 
 ---
 
 <div align="center">
 
-**[⭐ Star this project](https://github.com/your-username/movable-modal-system)** if you find it useful!
+**Built with ❤️ by the Deeplure Team**
 
-Made with ❤️ by [Your Name](https://github.com/your-username)
+[⭐ Star this repository](https://github.com/Shubhkesarwani02/deeplure-modal-overlay) if you find it helpful!
 
 </div>

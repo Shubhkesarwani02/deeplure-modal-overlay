@@ -163,7 +163,7 @@ function ImageEditor() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-white" />
-            <span className="font-semibold text-white">Photoshop-like Panel System</span>
+            <span className="font-semibold text-white">Deeplure Modal Overlay</span>
           </div>
 
           <div className="flex items-center gap-1">

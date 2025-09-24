@@ -23,10 +23,10 @@ The production Dockerfile creates a multi-stage build that:
 
 ```bash
 # Build the production image
-docker build -t movable-modal-system .
+docker build -t deeplure-modal-overlay .
 
 # Run the container
-docker run -p 80:80 movable-modal-system
+docker run -p 80:80 deeplure-modal-overlay
 
 # Or use docker-compose
 docker-compose up --build
@@ -41,8 +41,8 @@ For development with hot reloading:
 docker-compose --profile dev up frontend-dev
 
 # Or build and run manually
-docker build -f Dockerfile.dev -t movable-modal-system-dev .
-docker run -p 3000:3000 -v $(pwd):/app movable-modal-system-dev
+docker build -f Dockerfile.dev -t deeplure-modal-overlay-dev .
+docker run -p 3000:3000 -v $(pwd):/app deeplure-modal-overlay-dev
 ```
 
 ## Key Features
@@ -76,10 +76,10 @@ You can pass environment variables to the containers:
 
 ```bash
 # Production
-docker run -p 80:80 -e NODE_ENV=production movable-modal-system
+docker run -p 80:80 -e NODE_ENV=production deeplure-modal-overlay
 
 # Development
-docker run -p 3000:3000 -e NODE_ENV=development movable-modal-system-dev
+docker run -p 3000:3000 -e NODE_ENV=development deeplure-modal-overlay-dev
 ```
 
 ## Deployment
@@ -97,7 +97,7 @@ docker-compose up -d frontend
 ### Building for Different Platforms
 ```bash
 # Build for multiple platforms
-docker buildx build --platform linux/amd64,linux/arm64 -t movable-modal-system .
+docker buildx build --platform linux/amd64,linux/arm64 -t deeplure-modal-overlay .
 ```
 
 ## Troubleshooting
