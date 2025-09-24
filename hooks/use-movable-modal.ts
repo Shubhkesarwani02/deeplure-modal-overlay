@@ -43,7 +43,7 @@ export function useMovableModal({
 
   const constrainPosition = useCallback(
     (pos: Position): Position => {
-      if (!constrainToViewport || !modalRef.current) return pos
+      if (!constrainToViewport || !modalRef.current || typeof window === 'undefined') return pos
 
       const modal = modalRef.current
       const rect = modal.getBoundingClientRect()
@@ -162,6 +162,8 @@ export function useMovableModal({
 
   // Handle window resize to keep modal in bounds
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    
     const handleResize = () => {
       updatePosition(position)
     }

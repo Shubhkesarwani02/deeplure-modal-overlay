@@ -40,13 +40,21 @@ function ImageEditor() {
     useModalManager()
   const [selectedTool, setSelectedTool] = useState("select")
 
+  // Use a safe default for SSR, will be updated on client
+  const getInitialX = (offset: number) => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth - offset
+    }
+    return 1200 - offset // Default fallback for SSR
+  }
+
   const panelConfigs = [
     {
       id: "color",
       panelType: "color",
       title: "Color",
       content: <ColorPanel />,
-      initialPosition: { x: window.innerWidth - 300, y: 100 },
+      initialPosition: { x: getInitialX(300), y: 100 },
       width: 280,
       height: 400,
       icon: Palette,
@@ -56,7 +64,7 @@ function ImageEditor() {
       panelType: "layers",
       title: "Layers",
       content: <LayersPanel />,
-      initialPosition: { x: window.innerWidth - 320, y: 520 },
+      initialPosition: { x: getInitialX(320), y: 520 },
       width: 300,
       height: 350,
       icon: Layers,
