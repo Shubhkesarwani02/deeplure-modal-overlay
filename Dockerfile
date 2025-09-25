@@ -1,4 +1,4 @@
-# Multi-stage build for Next.js application with nginx serving
+# Multi-stage build for deeplure-modal-overlay with nginx serving
 
 # Build stage
 FROM node:18-alpine AS builder
@@ -28,7 +28,7 @@ RUN tar -czf dist.tar.gz out/
 FROM nginx:alpine AS production
 
 # Install necessary packages
-RUN apk add --no-cache tar gzip
+RUN apk add --no-cache tar gzip curl
 
 # Copy the built application from builder stage
 COPY --from=builder /app/dist.tar.gz /tmp/

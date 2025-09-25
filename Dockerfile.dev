@@ -1,4 +1,4 @@
-# Development Dockerfile
+# Development Dockerfile for deeplure-modal-overlay
 FROM node:18-alpine
 
 WORKDIR /app
