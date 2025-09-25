@@ -142,6 +142,22 @@ If you want an even easier way to run everything:
 **Issue**: "Cannot connect to the Docker daemon"
 - **Solution**: Make sure Docker Desktop is running (check system tray)
 
+**Issue**: Container starts but immediately stops
+- **Solution**: Check container logs:
+  ```powershell
+  docker logs deeplure-modal-overlay
+  ```
+  Common causes:
+  - nginx configuration syntax error
+  - Missing files in the build
+  - Port conflicts
+
+**Issue**: "nginx: [emerg] invalid value" error
+- **Solution**: This was fixed in the nginx.conf file. Rebuild the image:
+  ```powershell
+  docker build -t deeplure-modal-overlay .
+  ```
+
 ### Development Mode (For Making Changes)
 
 If you want to make changes to your code and see them immediately:

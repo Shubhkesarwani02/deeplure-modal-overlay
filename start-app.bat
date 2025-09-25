@@ -33,6 +33,7 @@ docker run -d -p 80:80 --name deeplure-modal-overlay deeplure-modal-overlay
 if %errorlevel% neq 0 (
     echo ERROR: Failed to start container. Please check if port 80 is available.
     echo You can try running: docker run -d -p 8080:80 --name deeplure-modal-overlay deeplure-modal-overlay
+    echo Then visit: http://localhost:8080
     pause
     exit /b 1
 )
